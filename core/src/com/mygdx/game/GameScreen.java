@@ -11,6 +11,7 @@ public class GameScreen implements Screen {
     MyGdxGame game;
 
     public GameScreen(MyGdxGame game){
+        //test
         this.game = game;
     }
 
