@@ -6,29 +6,26 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 
 public class GameScreen implements Screen {
-
-    Texture img;
     MyGdxGame game;
 
+
+
     public GameScreen(MyGdxGame game){
-        //test
         this.game = game;
     }
 
     @Override
     public void show(){
-        img = new Texture("badlogic.jpg");
 
     }
 
     @Override
     public void render(float delta){
-        Gdx.gl.glClearColor(1, 0, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         game.batch.begin();
 
-        game.batch.draw(img, 0, 0);
 
         game.batch.end();
 
