@@ -82,7 +82,10 @@ public class MenuScreen implements Screen {
         float exitY = Gdx.graphics.getHeight()/2 + 50f;
 
         game.batch.begin();
+
+
         //button width is 125f and height is 40f
+        //gets button locations and runs when touched/clicked
         if(Gdx.input.getX() > playX && Gdx.input.getX() < playX + 125f
                 && Gdx.input.getY() > playY && Gdx.input.getY() < playY + 40f ){
             if(Gdx.input.isTouched()){
