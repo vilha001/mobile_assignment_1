@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 
@@ -16,6 +15,8 @@ public class GameScreen implements Screen {
     private static final float BALL_MOVEMENT = 200f;
     float moveX = 0;
     float moveY = 0;
+    boolean directionY = true;
+    boolean directionX = true;
 
 
     MyGdxGame game;
@@ -26,7 +27,12 @@ public class GameScreen implements Screen {
 
     Sprite playerSprite;
     Sprite ball;
-    Sprite[] bricks;
+    Sprite brick1;
+    Sprite brick2;
+    Sprite brick3;
+    Sprite brick4;
+
+
 
 
 
@@ -57,7 +63,7 @@ public class GameScreen implements Screen {
             }
         }
         //gets player sprite as its bigger than the others
-        gamePieces[4] = new TextureRegion(breakOut, 40, 0, 120, 23);
+        gamePieces[4] = new TextureRegion(breakOut, 40, 0, 80, 23);
 
         gameBall = new Texture((Gdx.files.internal("SoccerBall.png")));
 
@@ -65,10 +71,11 @@ public class GameScreen implements Screen {
         ball = new Sprite(gameBall);
 
         //adds bricks to sprite array, make easier to work with
-        bricks = new Sprite[]{new Sprite(gamePieces[0]),
-                new Sprite(gamePieces[1]),
-                new Sprite(gamePieces[2]),
-                new Sprite(gamePieces[3])};
+        brick1 = new Sprite(gamePieces[0]);
+        brick2 = new Sprite(gamePieces[1]);
+        brick3 = new Sprite(gamePieces[2]);
+        brick4 = new Sprite(gamePieces[3]);
+
 
 
 
@@ -83,6 +90,18 @@ public class GameScreen implements Screen {
 
     }
 
+    public int randomDirection(){
+
+        int random = (int)(Math.random() * 101);
+        System.out.println(random);
+        if(random > 50){
+            directionX = true;
+        } else{
+            directionX = false;
+        }
+        return random;
+    }
+
     @Override
     public void render(float delta){
         float dt = Gdx.graphics.getDeltaTime();
@@ -92,26 +111,16 @@ public class GameScreen implements Screen {
         game.batch.begin();
 
         //sets bricks position
-        int posY = 0;
-        for(int y = 0; y < 4; y++){
-            int pos = 0;
-            for(int x = 0; x < 20; x++){
-                bricks[y].setPosition(pos, 464 - posY);
-                //sets to 32 so it will cover screen of x resolution 640
-                bricks[y].setSize(32,16);
-                pos += bricks[y].getWidth();
-                bricks[y].draw(game.batch);
-            }
-            //drops the y height down after one loop is done
-            posY += bricks[0].getRegionHeight();
-        }
+        brick1.setPosition(100, 440);
+        brick1.draw(game.batch);
+
 
 
 
         //sets player
         playerSprite.setSize(128, 16);
         //makes sure player stays in the window
-        if(Gdx.input.getX() < Gdx.graphics.getWidth() - (playerSprite.getRegionWidth()/2)){
+        if(Gdx.input.getX() < Gdx.graphics.getWidth() - (playerSprite.getRegionWidth())){
             //sets player location to the x value
             playerSprite.setPosition(Gdx.input.getX(), 48);
         }
@@ -119,19 +128,42 @@ public class GameScreen implements Screen {
 
         ball.setSize(16,16);
         //ball location
-        moveY = moveY + BALL_MOVEMENT *dt;
-        moveX = 100;
-        if(ball.getBoundingRectangle().overlaps(bricks[0].getBoundingRectangle()) ){
+        if(moveY > Gdx.graphics.getHeight() - ball.getHeight()){
+            directionY = false;
+            randomDirection();
+        }
+        if(moveY < 0){
+            directionY = true;
+            randomDirection();
+
+        }
+        if (directionY == true) {
+            moveY = moveY + BALL_MOVEMENT *dt;
+        } else{
+            moveY = moveY - BALL_MOVEMENT *dt;
+        }
+        if(ball.getBoundingRectangle().overlaps(brick1.getBoundingRectangle()) ){
             System.out.println("i got here");
 
         }
+
+        if(ball.getBoundingRectangle().overlaps(playerSprite.getBoundingRectangle())){
+            directionY = true;
+            randomDirection();
+        }
+
+        if(directionX == true){
+            moveX = moveX + 50 * dt;
+        } else{
+            moveX = moveX - 50 * dt;
+        }
+
 
         ball.setPosition(moveX, moveY);
 
 
         playerSprite.draw(game.batch);
         ball.draw(game.batch);
-
 
         game.batch.end();
 
