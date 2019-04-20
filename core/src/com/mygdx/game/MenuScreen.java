@@ -23,7 +23,7 @@ public class MenuScreen implements Screen {
         this.game = game;
         stage = new Stage();
 
-        //apply font to mainFOnt
+        //apply font to mainFont
         mainFont = new BitmapFont(Gdx.files.internal("good_neighbors.fnt"),
                 Gdx.files.internal("good_neighbors.png"), false);
         //sets button style with font
