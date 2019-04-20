@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -17,6 +18,7 @@ public class MenuScreen implements Screen {
     BitmapFont mainFont;
     TextButton.TextButtonStyle textButtonStyle;
     Stage stage;
+    Sound waterDrop = Gdx.audio.newSound(Gdx.files.internal("waterDrop.wav"));
 
 
     public MenuScreen(MyGdxGame game){
@@ -89,14 +91,18 @@ public class MenuScreen implements Screen {
         if(Gdx.input.getX() > playX && Gdx.input.getX() < playX + 125f
                 && Gdx.input.getY() > playY && Gdx.input.getY() < playY + 40f ){
             if(Gdx.input.isTouched()){
+                waterDrop.play();
                 game.setScreen(new GameScreen(game));
+
             }
         }
 
         if(Gdx.input.getX() > exitX && Gdx.input.getX() < exitX + 125f
                 && Gdx.input.getY() > exitY && Gdx.input.getY() < exitY + 40f ){
             if(Gdx.input.isTouched()){
+                waterDrop.play();
                 Gdx.app.exit();
+
             }
         }
 

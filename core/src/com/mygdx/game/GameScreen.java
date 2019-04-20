@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -25,6 +26,7 @@ public class GameScreen implements Screen {
     boolean pause = false;
     boolean gameOverState = false;
     boolean playing = false;
+    boolean won = false;
 
 
     MyGdxGame game;
@@ -57,6 +59,13 @@ public class GameScreen implements Screen {
     BitmapFont mainFont;
     TextButton.TextButtonStyle textButtonStyle;
 
+    Sound bing = Gdx.audio.newSound(Gdx.files.internal("bing.wav"));
+    Sound song = Gdx.audio.newSound(Gdx.files.internal("loopSong.mp3"));
+    Sound wall = Gdx.audio.newSound(Gdx.files.internal("wall.mp3"));
+    Sound waterDrop = Gdx.audio.newSound(Gdx.files.internal("waterDrop.wav"));
+    Sound win = Gdx.audio.newSound(Gdx.files.internal("win.wav"));
+    Sound lose = Gdx.audio.newSound(Gdx.files.internal("lose.wav"));
+
 
 
 
@@ -65,6 +74,7 @@ public class GameScreen implements Screen {
 
     public GameScreen(MyGdxGame game){
         this.game = game;
+        song.loop();
 
 
         //loss State
@@ -229,10 +239,12 @@ public class GameScreen implements Screen {
             directionY = false;
             randomDirection();
             randomAngle = randomDirection();
+            wall.play();
         }
         //checks if at bottom of screen
         if(moveY < 0){
             gameOverState = true;
+            lose.play();
         }
 
         if (directionY == true) {
@@ -246,6 +258,7 @@ public class GameScreen implements Screen {
             directionY = true;
             randomDirection();
             randomAngle = randomDirection();
+            bing.play();
         }
 
 
@@ -256,9 +269,11 @@ public class GameScreen implements Screen {
 
             }else{
                 if(ball.getBoundingRectangle().overlaps(bricks1.get(i).getBoundingRectangle())){
+                    bing.play();
                     directionY = false;
                     destroyed.add(bricks1.get(i));
                     bricks1Destroyed.add(i);
+
                 }
             }
 
@@ -269,6 +284,7 @@ public class GameScreen implements Screen {
 
             }else{
                 if(ball.getBoundingRectangle().overlaps(bricks2.get(i).getBoundingRectangle())){
+                    bing.play();
                     directionY = false;
                     destroyed.add(bricks2.get(i));
                     bricks2Destroyed.add(i);
@@ -281,6 +297,7 @@ public class GameScreen implements Screen {
 
             }else{
                 if(ball.getBoundingRectangle().overlaps(bricks3.get(i).getBoundingRectangle())){
+                    bing.play();
                     directionY = false;
                     destroyed.add(bricks3.get(i));
                     bricks3Destroyed.add(i);
@@ -293,6 +310,7 @@ public class GameScreen implements Screen {
 
             }else{
                 if(ball.getBoundingRectangle().overlaps(bricks4.get(i).getBoundingRectangle())){
+                    bing.play();
                     directionY = false;
                     destroyed.add(bricks4.get(i));
                     bricks4Destroyed.add(i);
@@ -305,9 +323,11 @@ public class GameScreen implements Screen {
         //checks if ball goes past window width/walls
         if(moveX > Gdx.graphics.getWidth() - ball.getWidth()){
             directionX = false;
+            wall.play();
         }
         if (moveX < 0){
             directionX = true;
+            wall.play();
         }
 
         if(directionX == true){
@@ -322,6 +342,7 @@ public class GameScreen implements Screen {
 
         if(Gdx.input.getX() < 50 && Gdx.input.getY() < 100 && Gdx.input.getY() > 75){
             if(Gdx.input.isTouched()){
+                waterDrop.play();
                 pause = true;
             }
         }
@@ -330,7 +351,6 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta){
-
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -363,12 +383,14 @@ public class GameScreen implements Screen {
                         && Gdx.input.getY() > 275 && Gdx.input.getY() < 330){
                     if(Gdx.input.isTouched()){
                         Gdx.app.exit();
+                        waterDrop.play();
                     }
                 }
                 if(Gdx.input.getX() > playX && Gdx.input.getX() < playX + 215f
                         && Gdx.input.getY() > 275 && Gdx.input.getY() < 330){
                     if(Gdx.input.isTouched()){
                         pause = false;
+                        waterDrop.play();
                     }
                 }
             }else if(gameOverState) {
@@ -385,6 +407,7 @@ public class GameScreen implements Screen {
                 if(Gdx.input.getX() > playX && Gdx.input.getX() < playX + 215f
                         && Gdx.input.getY() > 275 && Gdx.input.getY() < 330){
                     if(Gdx.input.isTouched()){
+                        waterDrop.play();
                         //starts game again
                         game.setScreen(new GameScreen(game));
                     }
@@ -394,6 +417,7 @@ public class GameScreen implements Screen {
                 if(Gdx.input.getX() > exitX && Gdx.input.getX() < exitX + 130f
                 && Gdx.input.getY() > 275 && Gdx.input.getY() < 330){
                     if(Gdx.input.isTouched()){
+                        waterDrop.play();
                         Gdx.app.exit();
                     }
                 }
@@ -421,6 +445,12 @@ public class GameScreen implements Screen {
                 }
             } else{
                 //mostly same as gameover
+                if(won == false){
+                    //stops it from constanly playing
+                    win.play();
+                    won = true;
+                }
+
 
                 gameWin.draw(game.batch,10);
                 retryButton.draw(game.batch,10);
@@ -435,7 +465,9 @@ public class GameScreen implements Screen {
                 if(Gdx.input.getX() > playX && Gdx.input.getX() < playX + 215f
                         && Gdx.input.getY() > 275 && Gdx.input.getY() < 330){
                     if(Gdx.input.isTouched()){
+                        waterDrop.play();
                         game.setScreen(new GameScreen(game));
+
                     }
                 }
 
@@ -443,6 +475,7 @@ public class GameScreen implements Screen {
                 if(Gdx.input.getX() > exitX && Gdx.input.getX() < exitX + 130f
                         && Gdx.input.getY() > 275 && Gdx.input.getY() < 330){
                     if(Gdx.input.isTouched()){
+                        waterDrop.play();
                         Gdx.app.exit();
                     }
                 }
